@@ -1,0 +1,90 @@
+import logging
+from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+import os
+
+# ===== НАСТРОЙКИ =====
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
+
+logging.basicConfig(level=logging.INFO)
+
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher(bot)
+
+# ===== КНОПКИ МЕНЮ =====
+def main_menu():
+    kb = InlineKeyboardMarkup(row_width=1)
+    kb.add(
+        InlineKeyboardButton("📌 Записаться в группу 6–9 лет", callback_data="group_6_9"),
+        InlineKeyboardButton("📌 Записаться в группу 10–14 лет", callback_data="group_10_14"),
+        InlineKeyboardButton("📅 Расписание", callback_data="schedule"),
+        InlineKeyboardButton("👩‍🏫 Преподаватели", callback_data="teachers"),
+        InlineKeyboardButton("❓ Задать свой вопрос", callback_data="question"),
+    )
+    return kb
+
+# ===== /START =====
+@dp.message_handler(commands=["start"])
+async def start(message: types.Message):
+    await message.answer(
+        "Здравствуйте! 👋\n\n"
+        "Вы в боте детского модельного агентства.\n"
+        "Выберите интересующий раздел:",
+        reply_markup=main_menu()
+    )
+
+# ===== ОБРАБОТКА КНОПОК =====
+@dp.callback_query_handler(lambda c: c.data)
+async def process_callback(callback_query: types.CallbackQuery):
+    data = callback_query.data
+
+    if data == "group_6_9":
+        await callback_query.message.answer(
+            "Группа 6–9 лет.\n\n"
+            "Для записи необходимо оплатить участие:\n"
+            "👉 https://pay.example.com/6-9"
+        )
+
+    elif data == "group_10_14":
+        await callback_query.message.answer(
+            "Группа 10–14 лет.\n\n"
+            "Для записи необходимо оплатить участие:\n"
+            "👉 https://pay.example.com/10-14"
+        )
+
+    elif data == "schedule":
+        await callback_query.message.answer(
+            "📅 Расписание занятий:\n"
+            "Пн, Ср — 17:00\n"
+            "Сб — 12:00"
+        )
+
+    elif data == "teachers":
+        await callback_query.message.answer(
+            "👩‍🏫 Наши преподаватели:\n"
+            "• Анна Иванова — дефиле\n"
+            "• Мария Петрова — фотопозирование"
+        )
+
+    elif data == "question":
+        await callback_query.message.answer(
+            "✍️ Напишите ваш вопрос в ответном сообщении.\n"
+            "Менеджер ответит вам в ближайшее время."
+        )
+
+    await callback_query.answer()
+
+# ===== ПЕРЕСЫЛКА ВОПРОСОВ МЕНЕДЖЕРУ =====
+@dp.message_handler(lambda message: not message.text.startswith("/"))
+async def forward_question(message: types.Message):
+    if ADMIN_ID != 0:
+        await bot.send_message(
+            ADMIN_ID,
+            f"❓ Вопрос от @{message.from_user.username}:\n\n{message.text}"
+        )
+    await message.reply("Спасибо! Менеджер ответит вам 💬")
+
+# ===== ЗАПУСК =====
+if name == "__main__":
+    executor.start_polling(dp, skip_updates=True)
