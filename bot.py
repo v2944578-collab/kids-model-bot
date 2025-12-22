@@ -1,5 +1,6 @@
 import asyncio
 import os
+
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
 from aiogram.filters import CommandStart
@@ -14,13 +15,17 @@ dp = Dispatcher()
 async def start(message: Message):
     await message.answer(
         "Здравствуйте!\n\n"
-        "Это бот детского модельного агентства 👶✨\n\n"
-        "Скоро здесь будет запись в группы, расписание и анкеты."
+        "Это бот детского модельного агентства 🧸✨\n\n"
+        "Скоро здесь будет запись в группы, расписание и анонсы."
     )
 
 
 async def main():
     await dp.start_polling(bot)
+
+
+if name == "__main__":
+    asyncio.run(main())
 
 
 if name == "__main__":
