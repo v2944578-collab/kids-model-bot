@@ -168,9 +168,6 @@ if __name__ == "__main__":
 
 from aiohttp import web
 
-async def healthcheck(request):
-    return web.Response(text="OK")
-
 async def start_web_server():
     app = web.Application()
     app.router.add_get("/", healthcheck)
@@ -178,3 +175,6 @@ async def start_web_server():
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", 10000)
     await site.start()
+
+async def healthcheck(request):
+    return web.Response(text="OK")
