@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 
+MANAGER_ID = 190260809
 
 # =====================
 # TOKEN
