@@ -158,9 +158,23 @@ async def question(message: Message):
 # START BOT
 # =====================
 async def main():
+    await start_web_server()
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
     import asyncio
     asyncio.run(main())
+
+from aiohttp import web
+
+async def healthcheck(request):
+    return web.Response(text="OK")
+
+async def start_web_server():
+    app = web.Application()
+    app.router.add_get("/", healthcheck)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", 10000)
+    await site.start()
